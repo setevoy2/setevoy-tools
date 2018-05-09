@@ -30,7 +30,7 @@ PARAM_VALUE=
 CREATE_OR_UPDATE=
 
 # link to CloudFormation stacks
-CF_URL="https://us-west-1.console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks?filter=active&tab=events"
+CF_URL="https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks?filter=active&tab=events"
 
 while getopts "p:s:t:k:v:h" opt; do
     case $opt in
