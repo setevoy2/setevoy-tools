@@ -9,9 +9,14 @@ set -e
 # prevents errors in a pipeline from being masked
 set -o pipefail
 
-HELP="\n\tTOADD\n"
+HELP="\nUsed to create AWS CLoudFormation stack. \n\nUsage: \
+\n\t-p: (mandatory) AWS CLI profile name for authorization \
+\n\t-s: (mandatory)CloudFormation stack name to be created/updated \
+\n\t-t: (mandatory) path to a template file \
+\n\t-k: (optional) ParameterKey to be passed to the template if present \
+\n\t-v: (optional) ParameterValue to be passed to the template for the ParameterKey above\n"
 
-[[ $# -lt 2 ]] && { echo -e "$HELP"; exit 1; }
+[[ $# -lt 6 ]] && { echo -e "$HELP"; exit 1; }
 
 # define and reset all values
 PROFILE_NAME=
