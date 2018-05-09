@@ -13,8 +13,7 @@ HELP="\nUsed to create AWS CLoudFormation stack. \n\nUsage: \
 \n\t-p: (mandatory) AWS CLI profile name for authorization \
 \n\t-s: (mandatory)CloudFormation stack name to be created/updated \
 \n\t-t: (mandatory) path to a template file \
-\n\t-k: (optional) ParameterKey to be passed to the template if present \
-\n\t-v: (optional) ParameterValue to be passed to the template for the ParameterKey above\n"
+\n"
 
 [[ $# -lt 6 ]] && { echo -e "$HELP"; exit 1; }
 
@@ -22,8 +21,6 @@ HELP="\nUsed to create AWS CLoudFormation stack. \n\nUsage: \
 PROFILE_NAME=
 STACK_NAME=
 TEMPLATE_FILE=
-PARAM_KEY=
-PARAM_VALUE=
 
 # global will be set from cf_stack_check_create_or_update(), just reset/declare here
 # will contain "create" or "update" to chose action
@@ -32,7 +29,7 @@ CREATE_OR_UPDATE=
 # link to CloudFormation stacks
 CF_URL="https://eu-west-1.console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks?filter=active&tab=events"
 
-while getopts "p:s:t:k:v:h" opt; do
+while getopts "p:s:t:h" opt; do
     case $opt in
 		p)
 			# aws profile from ~/.aws/credentials
@@ -43,14 +40,6 @@ while getopts "p:s:t:k:v:h" opt; do
             ;;
         t)
             TEMPLATE_FILE=$OPTARG
-            ;;
-        k) 
-            # for ParameterKey= to be added to the create-stack call
-            PARAM_KEY=$OPTARG
-            ;;
-        v)
-            # for ParameterValue= to be added to the create-stack call
-            PARAM_VALUE=$OPTARG
             ;;
         h) echo -e "$HELP"
             ;;  
@@ -78,11 +67,8 @@ cf_stack_exec_create_or_update () {
     local stack_name=$2
     local template=$3
     local create_or_update=$4
-	local param_key=$5
-	local param_value=$6
 
-    aws cloudformation --profile $profile $create_or_update-stack --stack-name $stack_name --template-body file://$template \
-	 --parameters ParameterKey=$param_key,ParameterValue=$param_value
+	aws cloudformation --profile $profile $create_or_update-stack --stack-name $stack_name --template-body file://$template
 }
 
 # execution starts here
@@ -111,8 +97,7 @@ AWS profile: $PROFILE_NAME
 stack name: $STACK_NAME
 template: $TEMPLATE_FILE
 Stack exist: $([ $CREATE_OR_UPDATE = "create" ] && echo "False" || echo "True")
-ParameterKey: $PARAM_KEY
-ParameterValue: $PARAM_VALUE\n"
+\n"
 
 read -p "Are you sure to proceed? [y/n] " -r
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -128,12 +113,10 @@ fi
 #    local stack_name=$2
 #    local template=$3
 #    local create_or_update=$4
-#    local param_key=$5
-#    local param_value=$6
 #
 
 echo -e "\nRunning create or update stack $STACK_NAME..."
-if [[ $(cf_stack_exec_create_or_update $PROFILE_NAME $STACK_NAME $TEMPLATE_FILE $CREATE_OR_UPDATE $PARAM_KEY $PARAM_VALUE) ]]; then
+if [[ $(cf_stack_exec_create_or_update $PROFILE_NAME $STACK_NAME $TEMPLATE_FILE $CREATE_OR_UPDATE) ]]; then
     echo -e "\nStack creation started. Use $CF_URL to check its status.\n"
 else
     echo -e "\nSomething went wrong, use $CF_URL to check it for errors.\n"
